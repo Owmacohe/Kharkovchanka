@@ -16,15 +16,20 @@ public class PlayerController : MonoBehaviour
     [Range(1, 5)]
     public float idleFactor = 2.5f;
     public Transform vehicle;
+    public bool playSound;
+    public AudioClip idleSound, engineSound;
+    [Range(0, 1)]
+    public float idleVolume, engineVolume;
 
     private bool isOnGround;
-    private GameObject terrain;
     private Vector2 inputVal;
     private Vector3 isoUp, isoRight;
     private bool isUp, isDown, isRight, isLeft;
     private Transform vehicleModel;
     private float idleSpeed, idleAmplitude;
     private Rigidbody rb;
+    private AudioSource idleSource, engineSource;
+    private TerrainSpawner terrainSpawner;
 
     private void Start()
     {
@@ -36,6 +41,24 @@ public class PlayerController : MonoBehaviour
         idleAmplitude = wiggleAmplitude / idleFactor;
 
         rb = GetComponent<Rigidbody>();
+
+        idleSource = gameObject.AddComponent<AudioSource>();
+        idleSource.loop = true;
+        idleSource.volume = idleVolume;
+        idleSource.clip = idleSound;
+
+        engineSource = gameObject.AddComponent<AudioSource>();
+        engineSource.loop = true;
+        engineSource.volume = engineVolume;
+        engineSource.clip = engineSound;
+
+        if (playSound)
+        {
+            idleSource.Play();
+            engineSource.Play();
+        }
+
+        terrainSpawner = FindObjectOfType<TerrainSpawner>();
     }
 
     private void OnMove(InputValue input)
@@ -82,15 +105,20 @@ public class PlayerController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (terrain == null)
-        {
-            terrain = GetComponent<SnowTracks>().terrain;
-        }
-
         float tempSpeed, tempAmplitude;
 
         if (inputVal != Vector2.zero)
         {
+            if (engineSource.volume < engineVolume + 0.3f)
+            {
+                engineSource.volume += 0.01f;
+            }
+
+            if (engineSource.pitch < 1.2f)
+            {
+                engineSource.pitch += 0.05f;
+            }
+
             tempSpeed = wiggleSpeed;
             tempAmplitude = wiggleAmplitude;
 
@@ -212,6 +240,16 @@ public class PlayerController : MonoBehaviour
         }
         else
         {
+            if (engineSource.volume > engineVolume)
+            {
+                engineSource.volume -= 0.01f;
+            }
+
+            if (engineSource.pitch > 1)
+            {
+                engineSource.pitch -= 0.01f;
+            }
+
             tempSpeed = idleSpeed;
             tempAmplitude = idleAmplitude;
         }
@@ -219,19 +257,34 @@ public class PlayerController : MonoBehaviour
         vehicleModel.transform.localRotation = Quaternion.Euler(Vector3.up * tempAmplitude * Mathf.Sin(tempSpeed * Time.time));
     }
 
-    private void OnCollisionEnter(Collision collision)
+    private void OnCollisionStay(Collision collision)
     {
-        if (collision.gameObject.Equals(terrain))
+        if (collision.gameObject.layer == 6)
         {
             isOnGround = true;
         }
-    }
-
-    private void OnCollisionExit(Collision collision)
-    {
-        if (collision.gameObject.Equals(terrain))
+        else
         {
             isOnGround = false;
+        }
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.layer == 6)
+        {
+            SnowTracks snowTracks = GetComponent<SnowTracks>();
+            
+            if (!snowTracks.terrains.Contains(collision.gameObject))
+            {
+                snowTracks.addTerrain(collision.gameObject);
+                terrainSpawner.clearTerrains(transform.position);
+
+                if (!collision.gameObject.transform.position.Equals(Vector3.zero))
+                {
+                    terrainSpawner.spawnTerrain(transform.position, TerrainSpawner.Directions.N);
+                }
+            }
         }
     }
 }

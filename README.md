@@ -3,6 +3,11 @@
 
 ## Game features
 
+- Research mechanics
+  - Ice core drilling
+  - Meteorite discovery
+  - Star tracking
+
 ## Journal
 
 ### Design hypothesis
