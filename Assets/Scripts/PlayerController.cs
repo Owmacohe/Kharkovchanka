@@ -7,17 +7,28 @@ public class PlayerController : MonoBehaviour
 {
     [Range(0.05f, 0.5f)]
     public float movementSpeed = 0.15f;
-    public float rotationSpeed;
+    [Range(5, 10)]
+    public float rotationSpeed = 5;
+    [Range(10, 25)]
+    public float wiggleSpeed = 20;
+    [Range(1, 5)]
+    public float wiggleAmplitude = 2;
     public Transform vehicle;
 
     private Vector2 inputVal;
     private Vector3 isoUp, isoRight;
     private bool isUp, isDown, isRight, isLeft;
+    private Transform vehicleModel;
+    private float idleSpeed, idleAmplitude;
 
     private void Start()
     {
         isoUp = new Vector3(-1, 0, 1);
         isoRight = new Vector3(1, 0, 1);
+
+        vehicleModel = vehicle.transform.GetChild(0);
+        idleSpeed = wiggleSpeed / 2;
+        idleAmplitude = wiggleAmplitude / 2;
     }
 
     private void OnMove(InputValue input)
@@ -59,8 +70,13 @@ public class PlayerController : MonoBehaviour
 
     private void FixedUpdate()
     {
+        float tempSpeed, tempAmplitude;
+
         if (inputVal != Vector2.zero)
         {
+            tempSpeed = wiggleSpeed;
+            tempAmplitude = wiggleAmplitude;
+
             transform.position += ((isoRight * inputVal.x) + (isoUp * inputVal.y)) * movementSpeed;
 
             float tempAngle = vehicle.transform.localRotation.eulerAngles.y;
@@ -174,5 +190,12 @@ public class PlayerController : MonoBehaviour
 
             vehicle.transform.localRotation = Quaternion.Euler(Vector3.up * tempAngle);
         }
+        else
+        {
+            tempSpeed = idleSpeed;
+            tempAmplitude = idleAmplitude;
+        }
+
+        vehicleModel.transform.localRotation = Quaternion.Euler(Vector3.up * tempAmplitude * Mathf.Sin(tempSpeed * Time.time));
     }
 }
