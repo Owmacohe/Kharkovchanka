@@ -13,13 +13,18 @@ public class PlayerController : MonoBehaviour
     public float wiggleSpeed = 20;
     [Range(1, 5)]
     public float wiggleAmplitude = 2;
+    [Range(1, 5)]
+    public float idleFactor = 2.5f;
     public Transform vehicle;
 
+    private bool isOnGround;
+    private GameObject terrain;
     private Vector2 inputVal;
     private Vector3 isoUp, isoRight;
     private bool isUp, isDown, isRight, isLeft;
     private Transform vehicleModel;
     private float idleSpeed, idleAmplitude;
+    private Rigidbody rb;
 
     private void Start()
     {
@@ -27,8 +32,10 @@ public class PlayerController : MonoBehaviour
         isoRight = new Vector3(1, 0, 1);
 
         vehicleModel = vehicle.transform.GetChild(0);
-        idleSpeed = wiggleSpeed / 2;
-        idleAmplitude = wiggleAmplitude / 2;
+        idleSpeed = wiggleSpeed / idleFactor;
+        idleAmplitude = wiggleAmplitude / idleFactor;
+
+        rb = GetComponent<Rigidbody>();
     }
 
     private void OnMove(InputValue input)
@@ -68,8 +75,18 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    private void Update()
+    {
+        transform.rotation = Quaternion.Euler(Vector3.zero);
+    }
+
     private void FixedUpdate()
     {
+        if (terrain == null)
+        {
+            terrain = GetComponent<SnowTracks>().terrain;
+        }
+
         float tempSpeed, tempAmplitude;
 
         if (inputVal != Vector2.zero)
@@ -77,7 +94,10 @@ public class PlayerController : MonoBehaviour
             tempSpeed = wiggleSpeed;
             tempAmplitude = wiggleAmplitude;
 
-            transform.position += ((isoRight * inputVal.x) + (isoUp * inputVal.y)) * movementSpeed;
+            if (isOnGround)
+            {
+                rb.position += ((isoRight * inputVal.x) + (isoUp * inputVal.y)) * movementSpeed;
+            }
 
             float tempAngle = vehicle.transform.localRotation.eulerAngles.y;
             float targetAngle = 0;
@@ -197,5 +217,21 @@ public class PlayerController : MonoBehaviour
         }
 
         vehicleModel.transform.localRotation = Quaternion.Euler(Vector3.up * tempAmplitude * Mathf.Sin(tempSpeed * Time.time));
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.Equals(terrain))
+        {
+            isOnGround = true;
+        }
+    }
+
+    private void OnCollisionExit(Collision collision)
+    {
+        if (collision.gameObject.Equals(terrain))
+        {
+            isOnGround = false;
+        }
     }
 }

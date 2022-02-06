@@ -1,12 +1,8 @@
-Shader "Unlit/DrawTracks"
+Shader "Hidden/SnowFall"
 {
     Properties
     {
         _MainTex ("Texture", 2D) = "white" {}
-        _Coordinate("Coordinate", Vector) = (0, 0, 0, 0)
-        _Color("Draw Color", Color) = (1, 0, 0, 0)
-        _Size("Size", Range(1, 500)) = 1
-        _Strength("Strength", Range(0, 1)) = 1
     }
     SubShader
     {
@@ -33,10 +29,14 @@ Shader "Unlit/DrawTracks"
                 float4 vertex : SV_POSITION;
             };
 
+            float rand(float3 co)
+            {
+                return frac(sin(dot(co.xyz, float3(12.9898, 78.233, 45.5432))) * 43758.5453);
+            }
+
             sampler2D _MainTex;
             float4 _MainTex_ST;
-            fixed4 _Coordinate, _Color;
-            half _Size, _Strength;
+            half _FlakeAmount, _FlakeOpacity;
 
             v2f vert (appdata v)
             {
@@ -50,9 +50,9 @@ Shader "Unlit/DrawTracks"
             {
                 // sample the texture
                 fixed4 col = tex2D(_MainTex, i.uv);
-                float draw = pow(saturate(1 - distance(i.uv, _Coordinate.xy)), 500 / _Size);
-                fixed4 drawCol = _Color * (draw * _Strength);
-                return saturate(col + drawCol);
+                float rValue = ceil(rand(float3(i.uv.x, i.uv.y, 0) * _Time.x) - (1 - _FlakeAmount));
+
+                return saturate(col - (rValue * _FlakeOpacity));
             }
             ENDCG
         }
