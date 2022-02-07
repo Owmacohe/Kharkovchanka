@@ -6,67 +6,84 @@ using UnityEngine;
 public class TerrainSpawner : MonoBehaviour
 {
     private GameObject terrainObject;
-    private List<GameObject> terrains;
-    public enum Directions { N, NE, E, SE, S, SW, W, NW }
+    public enum Directions { None, N, NE, E, SE, S, SW, W, NW }
     private float offset;
+
+    public class TerrainChunk
+    {
+        public GameObject obj;
+        public int x, y;
+
+        public TerrainChunk(GameObject obj, int x, int y)
+        {
+            this.obj = obj;
+            this.x = x;
+            this.y = y;
+        }
+    }
+    private List<TerrainChunk> terrains;
 
     private void Start()
     {
         terrainObject = Resources.Load<GameObject>("Terrain");
         offset = terrainObject.transform.localScale.x * 10;
-        terrains = new List<GameObject>();
+        terrains = new List<TerrainChunk>();
 
-        for (int i = 0; i < transform.childCount; i++)
-        {
-            terrains.Add(transform.GetChild(i).gameObject);
-        }
+        spawnAround(Vector2.zero);
+    }
 
-        foreach (Directions j in Enum.GetValues(typeof(Directions)))
+    public void spawnAround(Vector2 origin)
+    {
+        foreach (Directions i in Enum.GetValues(typeof(Directions)))
         {
-            spawnTerrain(Vector3.zero, j);
+            Vector2 temp = spawnTerrain(origin, i);
+
+            foreach (Directions j in Enum.GetValues(typeof(Directions)))
+            {
+                spawnTerrain(temp, j);
+            }
         }
     }
 
-    public void spawnTerrain(Vector3 origin, Directions dir)
+    public Vector2 spawnTerrain(Vector2 origin, Directions dir)
     {
-        GameObject newTerrain = Instantiate(terrainObject, transform);
-
-        Vector3 temp = Vector3.zero;
+        Vector2 temp = Vector2.zero;
 
         switch (dir)
         {
             case Directions.N:
-                temp = Vector3.forward * offset;
+                temp = new Vector2(0, 1);
                 break;
             case Directions.NE:
-                temp = new Vector3(1, 0, 1) * offset;
+                temp = new Vector2(1, 1);
                 break;
             case Directions.E:
-                temp = Vector3.right * offset;
+                temp = new Vector2(1, 0);
                 break;
             case Directions.SE:
-                temp = new Vector3(1, 0, -1) * offset;
+                temp = new Vector2(1, -1);
                 break;
             case Directions.S:
-                temp = Vector3.forward * -offset;
+                temp = -new Vector2(0, 1);
                 break;
             case Directions.SW:
-                temp = new Vector3(-1, 0, -1) * offset;
+                temp = new Vector2(-1, -1);
                 break;
             case Directions.W:
-                temp = Vector3.right * -offset;
+                temp = -new Vector2(1, 0);
                 break;
             case Directions.NW:
-                temp = new Vector3(-1, 0, 1) * offset;
+                temp = new Vector2(-1, 1);
                 break;
         }
 
-        Vector3 tempPosition = new Vector3(origin.x, 0, origin.z) + temp;
+        Vector2 tempPosition = origin + temp;
+        Vector3 tempPositionOffset = new Vector3(tempPosition.x, 0, tempPosition.y) * offset;
         bool isValid = true;
 
-        foreach (GameObject i in terrains)
+        foreach (TerrainChunk i in terrains)
         {
-            if (Vector3.Distance(i.transform.position, tempPosition) <= offset / 2.0)
+            if (i.x == tempPosition.x && i.y == tempPosition.y)
             {
                 isValid = false;
             }
@@ -74,19 +91,26 @@ public class TerrainSpawner : MonoBehaviour
 
         if (isValid)
         {
-            newTerrain.transform.localPosition = tempPosition;
+            GameObject newTerrainObj = Instantiate(terrainObject, transform);
+            newTerrainObj.transform.localPosition = tempPositionOffset;
+            terrains.Add(new TerrainChunk(newTerrainObj, (int)tempPosition.x, (int)tempPosition.y));
         }
+
+        return tempPosition;
     }
 
+    /*
     public void clearTerrains(Vector3 origin)
     {
-        foreach (GameObject i in terrains)
+        foreach (TerrainChunk i in terrains)
         {
-            if (Vector3.Distance(origin, i.transform.position) > offset * 2)
+            if (Vector3.Distance(origin, i.obj.transform.position) > offset * 2)
             {
-                Destroy(i);
-                print("cleared");
+                print("cleared: " + i.x + " " + i.y);
+                terrains.Remove(i);
+                Destroy(i.obj);
             }
         }
     }
+    */
 }

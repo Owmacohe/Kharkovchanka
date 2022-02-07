@@ -31,6 +31,8 @@ public class PlayerController : MonoBehaviour
     private AudioSource idleSource, engineSource;
     private TerrainSpawner terrainSpawner;
 
+    private Vector2 lastCoordinate;
+
     private void Start()
     {
         isoUp = new Vector3(-1, 0, 1);
@@ -101,6 +103,13 @@ public class PlayerController : MonoBehaviour
     private void Update()
     {
         transform.rotation = Quaternion.Euler(Vector3.zero);
+
+        Vector2 coordinate = new Vector2(Mathf.Round(transform.position.x / 100f), Mathf.Round(transform.position.z / 100f));
+        
+        if (!lastCoordinate.Equals(coordinate))
+        {
+            terrainSpawner.spawnAround(coordinate);
+        }
     }
 
     private void FixedUpdate()
@@ -278,12 +287,6 @@ public class PlayerController : MonoBehaviour
             if (!snowTracks.terrains.Contains(collision.gameObject))
             {
                 snowTracks.addTerrain(collision.gameObject);
-                terrainSpawner.clearTerrains(transform.position);
-
-                if (!collision.gameObject.transform.position.Equals(Vector3.zero))
-                {
-                    terrainSpawner.spawnTerrain(transform.position, TerrainSpawner.Directions.N);
-                }
             }
         }
     }
