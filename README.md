@@ -3,14 +3,19 @@
 
 ## Game features
 
+## Journal
+
+### Design hypothesis
+- Task-based research game
+- Historical setting, with fictional story / characters
+- Procedurally-generated, but with a consistent through-line story
+- Character writing and interaction (future development)
+- Energy / power use system
 - Research mechanics
   - Ice core drilling
   - Meteorite discovery
   - Star tracking
-
-## Journal
-
-### Design hypothesis
+- Rogue-like in its iterative gameplay
 
 ### Development
 
