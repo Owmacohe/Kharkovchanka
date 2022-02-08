@@ -4,12 +4,13 @@ using UnityEngine;
 
 public class RockSpawner : MonoBehaviour
 {
+    public bool collidable = true;
     [Range(0, 500)]
     public int density = 100;
     [Range(0.1f, 0.2f)]
     public float rockSizeMax = 0.15f;
 
-    private void Start()
+    public void spawnRocks()
     {
         float radius = transform.localScale.x / 2;
 
@@ -23,6 +24,8 @@ public class RockSpawner : MonoBehaviour
             temp.transform.localPosition = randomPosition;
             temp.transform.localScale = Vector3.one * Random.Range(0.05f, rockSizeMax);
             temp.transform.localRotation = Quaternion.Euler(randomVector3());
+
+            temp.GetComponent<Collider>().enabled = collidable;
         }
     }
 

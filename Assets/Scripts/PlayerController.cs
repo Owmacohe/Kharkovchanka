@@ -5,6 +5,7 @@ using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour
 {
+    public bool disableControl;
     [Range(0.05f, 0.5f)]
     public float movementSpeed = 0.15f;
     [Range(5, 10)]
@@ -20,12 +21,14 @@ public class PlayerController : MonoBehaviour
     public AudioClip idleSound, engineSound;
     [Range(0, 1)]
     public float idleVolume, engineVolume;
+    [Range(1, 20)]
+    public float min3DSoundDistance = 10;
 
     private bool isOnGround;
     private Vector2 inputVal;
     private Vector3 isoUp, isoRight;
     private bool isUp, isDown, isRight, isLeft;
-    private Transform vehicleModel;
+    private Transform vehicleModel, cam;
     private float idleSpeed, idleAmplitude;
     private Rigidbody rb;
     private AudioSource idleSource, engineSource;
@@ -48,11 +51,15 @@ public class PlayerController : MonoBehaviour
         idleSource.loop = true;
         idleSource.volume = idleVolume;
         idleSource.clip = idleSound;
+        idleSource.minDistance = min3DSoundDistance;
+        idleSource.spatialBlend = 1;
 
         engineSource = gameObject.AddComponent<AudioSource>();
         engineSource.loop = true;
         engineSource.volume = engineVolume;
         engineSource.clip = engineSound;
+        engineSource.minDistance = min3DSoundDistance;
+        engineSource.spatialBlend = 1;
 
         if (playSound)
         {
@@ -65,50 +72,56 @@ public class PlayerController : MonoBehaviour
 
     private void OnMove(InputValue input)
     {
-        inputVal = input.Get<Vector2>();
+        if (!disableControl)
+        {
+            inputVal = input.Get<Vector2>();
 
-        if (inputVal.y > 0)
-        {
-            isUp = true;
-            isDown = false;
-        }
-        else if (inputVal.y < 0)
-        {
-            isUp = false;
-            isDown = true;
-        }
-        else
-        {
-            isUp = false;
-            isDown = false;
-        }
+            if (inputVal.y > 0)
+            {
+                isUp = true;
+                isDown = false;
+            }
+            else if (inputVal.y < 0)
+            {
+                isUp = false;
+                isDown = true;
+            }
+            else
+            {
+                isUp = false;
+                isDown = false;
+            }
 
-        if (inputVal.x > 0)
-        {
-            isRight = true;
-            isLeft = false;
-        }
-        else if (inputVal.x < 0)
-        {
-            isRight = false;
-            isLeft = true;
-        }
-        else
-        {
-            isRight = false;
-            isLeft = false;
+            if (inputVal.x > 0)
+            {
+                isRight = true;
+                isLeft = false;
+            }
+            else if (inputVal.x < 0)
+            {
+                isRight = false;
+                isLeft = true;
+            }
+            else
+            {
+                isRight = false;
+                isLeft = false;
+            }
         }
     }
 
     private void Update()
     {
-        transform.rotation = Quaternion.Euler(Vector3.zero);
-
-        Vector2 coordinate = new Vector2(Mathf.Round(transform.position.x / 100f), Mathf.Round(transform.position.z / 100f));
-        
-        if (!lastCoordinate.Equals(coordinate))
+        if (!disableControl)
         {
-            terrainSpawner.spawnAround(coordinate);
+            transform.rotation = Quaternion.identity;
+
+            Vector2 coordinate = new Vector2(Mathf.Round(transform.position.x / 100f), Mathf.Round(transform.position.z / 100f));
+
+            if (!lastCoordinate.Equals(coordinate))
+            {
+                terrainSpawner.spawnAround(coordinate);
+            }
         }
     }
 
@@ -131,121 +144,124 @@ public class PlayerController : MonoBehaviour
             tempSpeed = wiggleSpeed;
             tempAmplitude = wiggleAmplitude;
 
-            if (isOnGround)
+            if (!disableControl)
             {
-                rb.position += ((isoRight * inputVal.x) + (isoUp * inputVal.y)) * movementSpeed;
-            }
-
-            float tempAngle = vehicle.transform.localRotation.eulerAngles.y;
-            float targetAngle = 0;
-
-            if (isUp)
-            {
-                if (isRight) { targetAngle = 270; }
-                else if (isLeft) { targetAngle = 180; }
-                else { targetAngle = 225; }
-            }
-            else if (isDown)
-            {
-                if (isRight) { targetAngle = 1; }
-                else if (isLeft) { targetAngle = 90; }
-                else { targetAngle = 45; }
-            }
-            else if (isRight)
-            {
-                if (isUp) { targetAngle = 270; }
-                else if (isDown) { targetAngle = 1; }
-                else { targetAngle = 315; }
-            }
-            else if (isLeft)
-            {
-                if (isUp) { targetAngle = 180; }
-                else if (isDown) { targetAngle = 90; }
-                else { targetAngle = 135; }
-            }
-
-            if (tempAngle > 225)
-            {
-                if (targetAngle > tempAngle || targetAngle <= 45)
+                if (isOnGround)
                 {
-                    if (targetAngle > 45 && tempAngle + rotationSpeed > targetAngle)
+                    rb.position += ((isoRight * inputVal.x) + (isoUp * inputVal.y)) * movementSpeed;
+                }
+
+                float tempAngle = vehicle.transform.localRotation.eulerAngles.y;
+                float targetAngle = 0;
+
+                if (isUp)
+                {
+                    if (isRight) { targetAngle = 270; }
+                    else if (isLeft) { targetAngle = 180; }
+                    else { targetAngle = 225; }
+                }
+                else if (isDown)
+                {
+                    if (isRight) { targetAngle = 1; }
+                    else if (isLeft) { targetAngle = 90; }
+                    else { targetAngle = 45; }
+                }
+                else if (isRight)
+                {
+                    if (isUp) { targetAngle = 270; }
+                    else if (isDown) { targetAngle = 1; }
+                    else { targetAngle = 315; }
+                }
+                else if (isLeft)
+                {
+                    if (isUp) { targetAngle = 180; }
+                    else if (isDown) { targetAngle = 90; }
+                    else { targetAngle = 135; }
+                }
+
+                if (tempAngle > 225)
+                {
+                    if (targetAngle > tempAngle || targetAngle <= 45)
                     {
-                        tempAngle = targetAngle;
+                        if (targetAngle > 45 && tempAngle + rotationSpeed > targetAngle)
+                        {
+                            tempAngle = targetAngle;
+                        }
+                        else
+                        {
+                            tempAngle += rotationSpeed;
+                        }
                     }
-                    else
+                    else if (targetAngle < tempAngle)
                     {
-                        tempAngle += rotationSpeed;
+                        if (tempAngle - rotationSpeed < targetAngle)
+                        {
+                            tempAngle = targetAngle;
+                        }
+                        else
+                        {
+                            tempAngle -= rotationSpeed;
+                        }
                     }
                 }
-                else if (targetAngle < tempAngle)
+                else if (tempAngle <= 225 && tempAngle > 45)
                 {
-                    if (tempAngle - rotationSpeed < targetAngle)
+                    if (targetAngle > tempAngle)
                     {
-                        tempAngle = targetAngle;
+                        if (tempAngle + rotationSpeed > targetAngle)
+                        {
+                            tempAngle = targetAngle;
+                        }
+                        else
+                        {
+                            tempAngle += rotationSpeed;
+                        }
                     }
                     else
                     {
-                        tempAngle -= rotationSpeed;
-                    }
-                }
-            }
-            else if (tempAngle <= 225 && tempAngle > 45)
-            {
-                if (targetAngle > tempAngle)
-                {
-                    if (tempAngle + rotationSpeed > targetAngle)
-                    {
-                        tempAngle = targetAngle;
-                    }
-                    else
-                    {
-                        tempAngle += rotationSpeed;
+                        if (tempAngle - rotationSpeed < targetAngle)
+                        {
+                            tempAngle = targetAngle;
+                        }
+                        else
+                        {
+                            tempAngle -= rotationSpeed;
+                        }
                     }
                 }
                 else
                 {
-                    if (tempAngle - rotationSpeed < targetAngle)
+                    if (targetAngle < tempAngle || targetAngle > 225)
                     {
-                        tempAngle = targetAngle;
+                        if (targetAngle <= 225 && tempAngle - rotationSpeed < targetAngle)
+                        {
+                            tempAngle = targetAngle;
+                        }
+                        else
+                        {
+                            tempAngle -= rotationSpeed;
+                        }
                     }
-                    else
+                    else if (targetAngle > tempAngle)
                     {
-                        tempAngle -= rotationSpeed;
-                    }
-                }
-            }
-            else
-            {
-                if (targetAngle < tempAngle || targetAngle > 225)
-                {
-                    if (targetAngle <= 225 && tempAngle - rotationSpeed < targetAngle)
-                    {
-                        tempAngle = targetAngle;
-                    }
-                    else
-                    {
-                        tempAngle -= rotationSpeed;
-                    }
-                }
-                else if (targetAngle > tempAngle)
-                {
-                    if (tempAngle + rotationSpeed > targetAngle)
-                    {
-                        tempAngle = targetAngle;
-                    }
-                    else
-                    {
-                        tempAngle += rotationSpeed;
+                        if (tempAngle + rotationSpeed > targetAngle)
+                        {
+                            tempAngle = targetAngle;
+                        }
+                        else
+                        {
+                            tempAngle += rotationSpeed;
+                        }
                     }
                 }
-            }
 
-            if (tempAngle == 45)
-            {
-                tempAngle = 44;
-            }
+                if (tempAngle == 45)
+                {
+                    tempAngle = 44;
+                }
 
-            vehicle.transform.localRotation = Quaternion.Euler(Vector3.up * tempAngle);
+                vehicle.transform.localRotation = Quaternion.Euler(Vector3.up * tempAngle);
+            }
         }
         else
         {
@@ -268,13 +284,16 @@ public class PlayerController : MonoBehaviour
 
     private void OnCollisionStay(Collision collision)
     {
-        if (collision.gameObject.layer == 6)
+        if (!disableControl)
         {
-            isOnGround = true;
-        }
-        else
-        {
-            isOnGround = false;
+            if (collision.gameObject.layer == 6)
+            {
+                isOnGround = true;
+            }
+            else
+            {
+                isOnGround = false;
+            }
         }
     }
 

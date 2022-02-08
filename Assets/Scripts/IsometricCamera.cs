@@ -8,9 +8,12 @@ public class IsometricCamera : MonoBehaviour
     [Range(4, 16)]
     public float distanceFromTarget = 8;
 
+    //private Quaternion initial;
+
     private void Start()
     {
         transform.localPosition = new Vector3(1, 1, -1) * distanceFromTarget;
         transform.LookAt(lookTarget);
+        //initial = transform.rotation;
     }
 }

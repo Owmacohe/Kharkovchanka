@@ -5,6 +5,11 @@ using UnityEngine;
 
 public class TerrainSpawner : MonoBehaviour
 {
+    public bool deformGround;
+    public bool spawnOuter = true;
+    public bool spawnInteriorRocks = true;
+    public bool collidableRocks = true;
+
     private GameObject terrainObject;
     public enum Directions { None, N, NE, E, SE, S, SW, W, NW }
     private float offset;
@@ -29,6 +34,7 @@ public class TerrainSpawner : MonoBehaviour
         offset = terrainObject.transform.localScale.x * 10;
         terrains = new List<TerrainChunk>();
 
+        spawnTerrain(Vector2.zero, Directions.None, false);
         spawnAround(Vector2.zero);
     }
 
@@ -36,16 +42,19 @@ public class TerrainSpawner : MonoBehaviour
     {
         foreach (Directions i in Enum.GetValues(typeof(Directions)))
         {
-            Vector2 temp = spawnTerrain(origin, i);
+            Vector2 temp = spawnTerrain(origin, i, true);
 
-            foreach (Directions j in Enum.GetValues(typeof(Directions)))
+            if (spawnOuter)
             {
-                spawnTerrain(temp, j);
+                foreach (Directions j in Enum.GetValues(typeof(Directions)))
+                {
+                    spawnTerrain(temp, j, true);
+                }
             }
         }
     }
 
-    public Vector2 spawnTerrain(Vector2 origin, Directions dir)
+    public Vector2 spawnTerrain(Vector2 origin, Directions dir, bool deform)
     {
         Vector2 temp = Vector2.zero;
 
@@ -94,6 +103,18 @@ public class TerrainSpawner : MonoBehaviour
             GameObject newTerrainObj = Instantiate(terrainObject, transform);
             newTerrainObj.transform.localPosition = tempPositionOffset;
             terrains.Add(new TerrainChunk(newTerrainObj, (int)tempPosition.x, (int)tempPosition.y));
+
+            if (deform && deformGround)
+            {
+                newTerrainObj.GetComponent<GroundDeformation>().deformMesh();
+            }
+
+            if (spawnInteriorRocks || (!spawnInteriorRocks && !tempPosition.Equals(Vector2.zero)))
+            {
+                RockSpawner rockSpawn = newTerrainObj.GetComponent<RockSpawner>();
+                rockSpawn.collidable = collidableRocks;
+                rockSpawn.spawnRocks();
+            }
         }
 
         return tempPosition;

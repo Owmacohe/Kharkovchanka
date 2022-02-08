@@ -1,6 +1,6 @@
 Shader "Custom/Snowtracks" {
     Properties{
-        _Tess("Tessellation", Range(1,64)) = 4
+        _Tess("Tessellation", Range(1,32)) = 4
         _SnowColor("Snow Color", color) = (1,1,1,0)
         _SnowTex("Snow (RGB)", 2D) = "white" {}
         _GroundColor("Ground Color", color) = (1,1,1,0)
@@ -29,8 +29,8 @@ Shader "Custom/Snowtracks" {
             float _Tess;
 
             float4 tessDistance(appdata v0, appdata v1, appdata v2) {
-                float minDist = 10.0;
-                float maxDist = 40.0;
+                float minDist = 0.0;
+                float maxDist = 200.0;
                 return UnityDistanceBasedTess(v0.vertex, v1.vertex, v2.vertex, minDist, maxDist, _Tess);
             }
 
