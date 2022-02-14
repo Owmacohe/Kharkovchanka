@@ -11,8 +11,7 @@ public class SnowTracks : MonoBehaviour
     [Range(0, 1)]
     public float strength = 0.5f;
 
-    [HideInInspector]
-    public List<GameObject> terrains;
+    private List<GameObject> terrains;
     private List<Transform> raycastObjects;
     private List<RenderTexture> splatMaps;
     private List<Material> snowMaterials;
@@ -68,6 +67,17 @@ public class SnowTracks : MonoBehaviour
                         RenderTexture.ReleaseTemporary(temp);
                     }
                 }
+            }
+        }
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.layer == 6)
+        {
+            if (!terrains.Contains(collision.gameObject))
+            {
+                addTerrain(collision.gameObject);
             }
         }
     }

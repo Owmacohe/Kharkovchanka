@@ -296,17 +296,4 @@ public class PlayerController : MonoBehaviour
             }
         }
     }
-
-    private void OnCollisionEnter(Collision collision)
-    {
-        if (collision.gameObject.layer == 6)
-        {
-            SnowTracks snowTracks = GetComponent<SnowTracks>();
-            
-            if (!snowTracks.terrains.Contains(collision.gameObject))
-            {
-                snowTracks.addTerrain(collision.gameObject);
-            }
-        }
-    }
 }
