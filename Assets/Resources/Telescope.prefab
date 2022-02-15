@@ -221,7 +221,7 @@ GameObject:
   - component: {fileID: 9117704126643649186}
   - component: {fileID: 6443631620202548840}
   - component: {fileID: 195558373443548238}
-  - component: {fileID: 3725609802655330582}
+  - component: {fileID: 8477618387970672552}
   m_Layer: 0
   m_Name: Telescope
   m_TagString: Untagged
@@ -237,7 +237,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4786372722228359101}
   m_LocalRotation: {x: -0.00000004750302, y: -0.000000047503008, z: 0.70710665, w: 0.7071069}
-  m_LocalPosition: {x: -0, y: 0.5, z: 0}
+  m_LocalPosition: {x: -0, y: -0.5, z: -5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 3235120954843105646}
@@ -305,10 +305,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 11542f8ae0abe1a46b6b258765c01a01, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isProgressing: 1
   swivelChance: 30
   speed: 3
   progressSpeed: 0.5
---- !u!65 &3725609802655330582
+--- !u!65 &8477618387970672552
 BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -320,7 +321,7 @@ BoxCollider:
   m_Enabled: 1
   serializedVersion: 2
   m_Size: {x: 1.5, y: 1.5, z: 1.5}
-  m_Center: {x: 0.7, y: 0.05, z: 0}
+  m_Center: {x: 0.7, y: 0, z: 0}
 --- !u!1 &5786852882645415286
 GameObject:
   m_ObjectHideFlags: 0

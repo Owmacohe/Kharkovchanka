@@ -5,29 +5,38 @@ using UnityEngine;
 
 public class TelescopeSwivel : MonoBehaviour
 {
+    public bool isProgressing = true;
     [Range(5, 40)]
     public float swivelChance = 30;
     [Range(1, 10)]
     public float speed = 3;
     [Range(0.1f, 0.5f)]
-    public float progressSpeed = 0.2f;
+    public float progressSpeed = 0.5f;
 
     private bool isRotating;
     private float swivelAngle;
 
-    private GameObject progressBar;
     private TMP_Text progressBarText;
+    private GameObject progressBar;
+    private Transform progressParent;
     private float progressAmount;
+
+    private GameController controller;
 
     private void Start()
     {
         progressBarText = GetComponentInChildren<TMP_Text>();
         progressBar = progressBarText.gameObject;
+        progressParent = progressBar.transform.parent;
+
+        controller = FindObjectOfType<GameController>();
     }
 
     private void Update()
     {
-        progressBar.transform.parent.LookAt(Camera.main.transform);
+        progressParent.LookAt(Camera.main.transform);
+        Vector3 tempRotation = progressParent.rotation.eulerAngles;
+        progressParent.rotation = Quaternion.Euler(new Vector3(0, tempRotation.y, tempRotation.z));
 
         if (isRotating)
         {
@@ -80,8 +89,19 @@ public class TelescopeSwivel : MonoBehaviour
 
     private void FixedUpdate()
     {
-        progressAmount += progressSpeed / 3f;
-        progressBarText.text = "Tracking stars: " + Mathf.Round(progressAmount) + "%";
+        if (isProgressing)
+        {
+            if (progressAmount < 100)
+            {
+                progressAmount += progressSpeed / 3f;
+                progressBarText.text = "Tracking stars: " + Mathf.Round(progressAmount) + "%";
+            }
+            else
+            {
+                controller.stopTrackingStars();
+                Destroy(gameObject);
+            }
+        }
 
         if (!isRotating && Random.Range(0, swivelChance) <= 1)
         {

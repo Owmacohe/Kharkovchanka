@@ -12,9 +12,10 @@
 - Character writing and interaction (future development)
 - Energy / power use system
 - Research mechanics
-  - Ice core drilling
-  - Meteorite discovery
   - Star tracking
+  - Meteorite discovery
+  - Ice core drilling
+
 - Rogue-like in its iterative gameplay
 
 ### Development
