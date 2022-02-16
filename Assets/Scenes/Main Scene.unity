@@ -7870,6 +7870,8 @@ MonoBehaviour:
   POIDistanceTrigger: 10
   minimapCanvas: {fileID: 327176735}
   isTrackingStars: 0
+  isSearchingForMeteorites: 0
+  isDrillingCore: 0
 --- !u!4 &2088550438
 Transform:
   m_ObjectHideFlags: 0

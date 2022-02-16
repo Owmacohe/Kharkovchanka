@@ -15,16 +15,15 @@ public class GameController : MonoBehaviour
     public Transform minimapCanvas;
     private Transform vehicleIcon;
 
-    private GameObject vehicle, telescopeObject;
-    private PlayerController playerController;
+    private GameObject vehicle, telescopeObject, tripodObject, encampmentObject;
     [HideInInspector]
-    public bool isTrackingStars;
+    public bool isTrackingStars, isSearchingForMeteorites, isDrillingCore;
 
     private TMP_Text energyText;
 
     private POI currentPOI;
 
-    enum POITypes { StarTracking, MeteoriteDiscovery, IceCoreDrilling }
+    enum POITypes { StarTracking, MeteoriteSearching, IceCoreDrilling }
     class POI
     {
         public POI(Vector3 pos, bool isActive, POITypes POIType, GameObject icon)
@@ -50,8 +49,9 @@ public class GameController : MonoBehaviour
         vehicleIcon = minimapCanvas.GetChild(0);
 
         vehicle = GameObject.FindGameObjectWithTag("Vehicle");
-        playerController = vehicle.GetComponentInParent<PlayerController>();
         telescopeObject = Resources.Load<GameObject>("Telescope");
+        tripodObject = Resources.Load<GameObject>("Tripod");
+        encampmentObject = Resources.Load<GameObject>("Encampment");
 
         energyText = GetComponentInChildren<TMP_Text>();
     }
@@ -66,7 +66,7 @@ public class GameController : MonoBehaviour
 
         vehicleIcon.localPosition = new Vector3(vehicle.transform.position.x, vehicle.transform.position.z, 0) * 13.35f;
 
-        if (!isTrackingStars)
+        if (!isTrackingStars && !isDrillingCore && !isSearchingForMeteorites)
         {
             bool foundPOI = false;
 
@@ -83,7 +83,7 @@ public class GameController : MonoBehaviour
                         case POITypes.StarTracking:
                             popupText.text = "to track star movements";
                             break;
-                        case POITypes.MeteoriteDiscovery:
+                        case POITypes.MeteoriteSearching:
                             popupText.text = "to search for meteorites";
                             break;
                         case POITypes.IceCoreDrilling:
@@ -126,6 +126,14 @@ public class GameController : MonoBehaviour
         {
             startTrackingStars();
         }
+        else if (currentPOI.POIType.Equals(POITypes.IceCoreDrilling) && !isDrillingCore)
+        {
+            startDrillingCore();
+        }
+        else if (currentPOI.POIType.Equals(POITypes.MeteoriteSearching) && !isSearchingForMeteorites)
+        {
+            startSearchingForMeteorites();
+        }
     }
 
     private void startTrackingStars()
@@ -134,6 +142,36 @@ public class GameController : MonoBehaviour
         temp.transform.parent = null;
 
         isTrackingStars = true;
+
+        energy -= 20;
+
+        popup.SetActive(false);
+        pointsOfInterest.Remove(currentPOI);
+        Destroy(currentPOI.icon);
+        currentPOI = null;
+    }
+
+    private void startDrillingCore()
+    {
+        GameObject temp = Instantiate(tripodObject, vehicle.transform);
+        temp.transform.parent = null;
+
+        isDrillingCore = true;
+
+        energy -= 20;
+
+        popup.SetActive(false);
+        pointsOfInterest.Remove(currentPOI);
+        Destroy(currentPOI.icon);
+        currentPOI = null;
+    }
+
+    private void startSearchingForMeteorites()
+    {
+        GameObject temp = Instantiate(encampmentObject, vehicle.transform);
+        temp.transform.parent = null;
+
+        isSearchingForMeteorites = true;
 
         energy -= 20;
 

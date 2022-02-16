@@ -5,11 +5,11 @@ using UnityEngine;
 
 public class TelescopeSwivel : MonoBehaviour
 {
-    public bool isProgressing = true;
     [Range(5, 40)]
     public float swivelChance = 30;
     [Range(1, 10)]
     public float speed = 3;
+    public bool isProgressing = true;
     [Range(0.1f, 0.5f)]
     public float progressSpeed = 0.5f;
 
