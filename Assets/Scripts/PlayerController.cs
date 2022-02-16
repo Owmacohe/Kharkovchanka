@@ -33,6 +33,7 @@ public class PlayerController : MonoBehaviour
     private Rigidbody rb;
     private AudioSource idleSource, engineSource;
     private TerrainSpawner terrainSpawner;
+    private GameController controller;
 
     private Vector2 lastCoordinate;
 
@@ -68,6 +69,7 @@ public class PlayerController : MonoBehaviour
         }
 
         terrainSpawner = FindObjectOfType<TerrainSpawner>();
+        controller = FindObjectOfType<GameController>();
     }
 
     private void OnMove(InputValue input)
@@ -108,6 +110,11 @@ public class PlayerController : MonoBehaviour
                 isLeft = false;
             }
         }
+    }
+
+    private void OnInteract()
+    {
+        controller.triggerPOI();
     }
 
     private void Update()

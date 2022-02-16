@@ -6,9 +6,12 @@ public class RockSpawner : MonoBehaviour
 {
     public bool collidable = true;
     [Range(0, 500)]
-    public int density = 100;
+    public int density = 35;
     [Range(0.1f, 0.2f)]
     public float rockSizeMax = 0.15f;
+
+    [Range(1, 10)]
+    public int pointOfInterestMax = 2;
 
     [HideInInspector]
     public List<Vector3> pointsOfInterest;
@@ -34,7 +37,7 @@ public class RockSpawner : MonoBehaviour
 
         pointsOfInterest = new List<Vector3>();
 
-        int POICount = Random.Range(1, 3);
+        int POICount = Random.Range(1, pointOfInterestMax + 1);
 
         for (int j = 0; j < POICount; j++)
         {

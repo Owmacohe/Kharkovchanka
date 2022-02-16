@@ -36,7 +36,8 @@ public class TelescopeSwivel : MonoBehaviour
     {
         progressParent.LookAt(Camera.main.transform);
         Vector3 tempRotation = progressParent.rotation.eulerAngles;
-        progressParent.rotation = Quaternion.Euler(new Vector3(0, tempRotation.y, tempRotation.z));
+        progressParent.rotation = Quaternion.Euler(tempRotation);
+        //progressParent.rotation = Quaternion.Euler(new Vector3(0, tempRotation.y, tempRotation.z));
 
         if (isRotating)
         {
@@ -98,7 +99,7 @@ public class TelescopeSwivel : MonoBehaviour
             }
             else
             {
-                controller.stopTrackingStars();
+                controller.isTrackingStars = false;
                 Destroy(gameObject);
             }
         }

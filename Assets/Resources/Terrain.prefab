@@ -208,8 +208,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a5bd44dc385ca9642a04ace306daabd0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  collidable: 1
   density: 35
   rockSizeMax: 0.15
+  pointOfInterestMax: 10
+  pointsOfInterest: []
 --- !u!114 &3986840556891351952
 MonoBehaviour:
   m_ObjectHideFlags: 0
