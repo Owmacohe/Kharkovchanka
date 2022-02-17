@@ -13,14 +13,16 @@ public class PlayerController : MonoBehaviour
     [Range(10, 25)]
     public float wiggleSpeed = 20;
     [Range(1, 5)]
-    public float wiggleAmplitude = 2;
+    public float wiggleAmplitude = 3;
     [Range(1, 5)]
     public float idleFactor = 2.5f;
     public Transform vehicle;
-    public bool playSound;
+    public bool playSound = true;
     public AudioClip idleSound, engineSound;
     [Range(0, 1)]
-    public float idleVolume, engineVolume;
+    public float idleVolume = 0.2f;
+    [Range(0, 1)]
+    public float engineVolume = 0.6f;
     [Range(1, 20)]
     public float min3DSoundDistance = 10;
 

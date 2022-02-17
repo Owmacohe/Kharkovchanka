@@ -48,6 +48,9 @@ public class MeteoriteSearch : MonoBehaviour
             }
             else
             {
+                controller.meteoriteCount++;
+                controller.shovelText.text = "" + controller.meteoriteCount;
+
                 controller.isSearchingForMeteorites = false;
                 Destroy(gameObject);
             }

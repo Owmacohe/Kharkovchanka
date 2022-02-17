@@ -99,6 +99,9 @@ public class TelescopeSwivel : MonoBehaviour
             }
             else
             {
+                controller.starCount++;
+                controller.telescopeText.text = "" + controller.starCount;
+
                 controller.isTrackingStars = false;
                 Destroy(gameObject);
             }

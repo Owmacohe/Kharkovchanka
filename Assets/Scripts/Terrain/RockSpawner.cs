@@ -14,6 +14,8 @@ public class RockSpawner : MonoBehaviour
     public int pointOfInterestMax = 2;
 
     [HideInInspector]
+    public bool isTitle;
+    [HideInInspector]
     public List<Vector3> pointsOfInterest;
     private GameController controller;
 
@@ -62,12 +64,15 @@ public class RockSpawner : MonoBehaviour
             }
         }
 
-        if (controller == null)
+        if (!isTitle)
         {
-            controller = FindObjectOfType<GameController>();
-        }
+            if (controller == null)
+            {
+                controller = FindObjectOfType<GameController>();
+            }
 
-        controller.addNewPOIs(pointsOfInterest);
+            controller.addNewPOIs(pointsOfInterest);
+        }
     }
 
     private Vector3 randomVector3()

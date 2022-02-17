@@ -46,6 +46,9 @@ public class IceCoreDrill : MonoBehaviour
             }
             else
             {
+                controller.drillingCount++;
+                controller.drillText.text = "" + controller.drillingCount;
+
                 controller.isDrillingCore = false;
                 Destroy(gameObject);
             }

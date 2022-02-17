@@ -5,8 +5,14 @@ using UnityEngine;
 
 public class GameController : MonoBehaviour
 {
+    /*
     public float energy = 50;
     private float lastEnergy;
+    */
+
+    public TMP_Text telescopeText, drillText, shovelText;
+    [HideInInspector]
+    public int starCount, meteoriteCount, drillingCount;
 
     public GameObject popup;
     private TMP_Text popupText;
@@ -19,7 +25,7 @@ public class GameController : MonoBehaviour
     [HideInInspector]
     public bool isTrackingStars, isSearchingForMeteorites, isDrillingCore;
 
-    private TMP_Text energyText;
+    //private TMP_Text energyText;
 
     private POI currentPOI;
 
@@ -53,16 +59,18 @@ public class GameController : MonoBehaviour
         tripodObject = Resources.Load<GameObject>("Tripod");
         encampmentObject = Resources.Load<GameObject>("Encampment");
 
-        energyText = GetComponentInChildren<TMP_Text>();
+        //energyText = GetComponentInChildren<TMP_Text>();
     }
 
     private void FixedUpdate()
     {
+        /*
         if (lastEnergy != energy)
         {
             energyText.text = "Energy: " + energy;
             lastEnergy = energy;
         }
+        */
 
         vehicleIcon.localPosition = new Vector3(vehicle.transform.position.x, vehicle.transform.position.z, 0) * 13.35f;
 
@@ -143,7 +151,7 @@ public class GameController : MonoBehaviour
 
         isTrackingStars = true;
 
-        energy -= 20;
+        //energy -= 20;
 
         popup.SetActive(false);
         pointsOfInterest.Remove(currentPOI);
@@ -158,7 +166,7 @@ public class GameController : MonoBehaviour
 
         isDrillingCore = true;
 
-        energy -= 20;
+        //energy -= 20;
 
         popup.SetActive(false);
         pointsOfInterest.Remove(currentPOI);
@@ -173,7 +181,7 @@ public class GameController : MonoBehaviour
 
         isSearchingForMeteorites = true;
 
-        energy -= 20;
+        //energy -= 20;
 
         popup.SetActive(false);
         pointsOfInterest.Remove(currentPOI);

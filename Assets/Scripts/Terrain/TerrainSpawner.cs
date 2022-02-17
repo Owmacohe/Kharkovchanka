@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class TerrainSpawner : MonoBehaviour
 {
-    public bool deformGround;
+    public bool deformGround, isTitle = false;
     public bool spawnOuter = true;
     public bool spawnInteriorRocks = true;
     public bool collidableRocks = true;
@@ -109,9 +109,12 @@ public class TerrainSpawner : MonoBehaviour
                 newTerrainObj.GetComponent<GroundDeformation>().deformMesh();
             }
 
+            RockSpawner rockSpawn = newTerrainObj.GetComponent<RockSpawner>();
+
+            rockSpawn.isTitle = isTitle;
+
             if (spawnInteriorRocks || (!spawnInteriorRocks && !tempPosition.Equals(Vector2.zero)))
             {
-                RockSpawner rockSpawn = newTerrainObj.GetComponent<RockSpawner>();
                 rockSpawn.collidable = collidableRocks;
                 rockSpawn.spawnRocks();
             }
