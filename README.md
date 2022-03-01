@@ -63,3 +63,25 @@
 3. If a story were to be added, would a large, complex narrative, or a small character-based one be better?
 4. In reference to the above question, I think a dating sim set between various researchers on the Kharkovchanka might be hilarious. Would this be a bad idea to pursue?
 5. Should this game have music? Or is the quiet rumbling of the engine actually enjoyable on its own?
+
+## Results from playtesting
+
+### Main issues
+- Possible lag issues and/or shader performance
+- _Too much_ maneuverability
+- Movement was a bit jerky
+- Sound was a bit too quiet
+- Lack of clear objective
+
+### Main enjoyments
+- Sound effects are good (don't necessarily need music)
+- Good base for further gameplay and story development
+- Movement is good, for the most part
+- Snow shader is appreciated
+
+### Improvements to be made
+- Add narrative (this will help a lot)
+  - Smaller rather than larger
+- Radio system would be neat to implement
+- Add consequences for depleting energy
+- Make points of interest more interesting
